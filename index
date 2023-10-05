@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess the Word Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #word-container {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        #input-container {
+            margin-top: 10px;
+        }
+        #result {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Guess the Word Game</h1>
+    <div id="word-container">Loading...</div>
+    <div id="input-container">
+        <label for="guess">Enter your guess: </label>
+        <input type="text" id="guess">
+        <button onclick="checkGuess()">Submit Guess</button>
+    </div>
+    <div id="result"></div>
+
+    <script>
+        let randomWord = "";
+        let attempts = 0;
+
+        async function getRandomWord() {
+            const response = await fetch("https://api.wordnik.com/v4/words.json/randomWord?hasDictionaryDef=true&minCorpusCount=0&minLength=5&maxLength=10&api_key=YOUR_API_KEY_HERE");
+            const data = await response.json();
+            return data.word;
+        }
+
+        async function initGame() {
+            randomWord = await getRandomWord();
+            document.getElementById("word-container").textContent = "_ ".repeat(randomWord.length);
+        }
+
+        function checkGuess() {
+            const guessInput = document.getElementById("guess");
+            const guess = guessInput.value.toLowerCase();
+
+            const lastGuessDate = getCookie("lastGuessDate");
+            const currentDate = new Date();
+            currentDate.setHours(0, 0, 0, 0);
+
+            if (!lastGuessDate || currentDate > new Date(lastGuessDate)) {
+                if (guess === randomWord.toLowerCase()) {
+                    displayResult("Congratulations! You guessed the word.");
+                    initGame();
+                    setCookie("lastGuessDate", currentDate.toISOString(), 1); // Store the current date in a cookie (expires in 1 day)
+                } else {
+                    attempts++;
+                    displayResult(`Incorrect guess. You've made ${attempts} ${attempts === 1 ? 'attempt' : 'attempts'}. Try again.`);
+                }
+            } else {
+                displayResult("Sorry, you can only guess once per day.");
+            }
+            
+            guessInput.value = "";
+        }
+
+        function displayResult(message) {
+            document.getElementById("result").textContent = message;
+        }
+
+        // Cookie functions to store and retrieve the last guess date
+        function setCookie(name, value, days) {
+            const expires = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toUTCString();
+            document.cookie = `${name}=${value}; expires=${expires}; path=/`;
+        }
+
+        function getCookie(name) {
+            const cookieName = `${name}=`;
+            const cookies = document.cookie.split(';');
+            for (const cookie of cookies) {
+                const trimmedCookie = cookie.trim();
+                if (trimmedCookie.startsWith(cookieName)) {
+                    return trimmedCookie.substring(cookieName.length);
+                }
+            }
+            return null;
+        }
+
+        // Initialize the game
+        initGame();
+    </script>
+</body>
+</html>
