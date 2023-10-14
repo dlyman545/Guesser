@@ -48,10 +48,10 @@
             if (attempts >= 5) {
                 displayResult("Sorry, you've reached the maximum number of attempts for today.");
                 return;
+            } else {
+                randomWord = await getRandomWord();
+                document.getElementById("word-container").textContent = "_ ".repeat(randomWord.length);
             }
-
-            randomWord = await getRandomWord();
-            document.getElementById("word-container").textContent = "_ ".repeat(randomWord.length);
         }
 
         function checkGuess() {
