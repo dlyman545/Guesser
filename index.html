@@ -57,10 +57,11 @@
             currentDate.setHours(0, 0, 0, 0);
 
             if (!lastGuessDate || currentDate > new Date(lastGuessDate)) {
+                setCookie("lastGuessDate", currentDate.toISOString(), 1); // Store the current date in a cookie (expires in 1 day)
                 if (guess === randomWord.toLowerCase()) {
                     displayResult("Congratulations! You guessed the word.");
                     initGame();
-                    setCookie("lastGuessDate", currentDate.toISOString(), 1); // Store the current date in a cookie (expires in 1 day)
+                    //setCookie("lastGuessDate", currentDate.toISOString(), 1); // Store the current date in a cookie (expires in 1 day)
                 } else {
                     attempts++;
                     displayResult(`Incorrect guess. You've made ${attempts} ${attempts === 1 ? 'attempt' : 'attempts'}. Try again.`);
