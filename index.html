@@ -32,6 +32,7 @@
         <button onclick="checkGuess()">Submit Guess</button>
     </div>
     <div id="result"></div>
+    <button onclick="revealWord()">Reveal Word</button>
 
     <script>
         let randomWord = "";
@@ -49,6 +50,11 @@
         }
 
         function checkGuess() {
+            if (attempts >= 5) {
+                displayResult("Sorry, you've reached the maximum number of attempts for today.");
+                return;
+            }
+
             const guessInput = document.getElementById("guess");
             const guess = guessInput.value.toLowerCase();
 
@@ -61,16 +67,20 @@
                 if (guess === randomWord.toLowerCase()) {
                     displayResult("Congratulations! You guessed the word.");
                     initGame();
-                    //setCookie("lastGuessDate", currentDate.toISOString(), 1); // Store the current date in a cookie (expires in 1 day)
                 } else {
                     attempts++;
                     displayResult(`Incorrect guess. You've made ${attempts} ${attempts === 1 ? 'attempt' : 'attempts'}. Try again.`);
                 }
             } else {
-                displayResult("Sorry, you can only guess once per day.");
+                displayResult("Sorry, you can only guess five times per day.");
             }
             
             guessInput.value = "";
+        }
+
+        function revealWord() {
+            displayResult(`The word was: ${randomWord}`);
+            initGame();
         }
 
         function displayResult(message) {
