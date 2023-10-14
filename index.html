@@ -45,6 +45,11 @@
         }
 
         async function initGame() {
+            if (attempts >= 5) {
+                displayResult("Sorry, you've reached the maximum number of attempts for today.");
+                return;
+            }
+
             randomWord = await getRandomWord();
             document.getElementById("word-container").textContent = "_ ".repeat(randomWord.length);
         }
